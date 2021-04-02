@@ -8,7 +8,34 @@ Symfony: 5.2
 
 ## Installation
 
+Install via [composer](https://getcomposer.org/)
+
+```shell script
+composer require jamarcer/symfony-httpkernel-apm
+```
+
 ## Usage
+
+It is necessary to have a previously created [ElasticApmTracer](https://github.com/zoilomora/elastic-apm-agent-php) instance.
+
+```shell script
+apm.tracer:
+    class: ZoiloMora\ElasticAPM\ElasticApmTracer
+    factory: ['App\Service\ApmService', 'instantiate']
+    arguments: ['apm-desa','http://localhost:7200','desa']
+```
+
+### Service Container
+
+```shell script
+Undanet\APM\Symfony\Component\HttpKernel\EventSubscriber:
+    class: Undanet\APM\Symfony\Component\HttpKernel\EventSubscriber
+    tags: [ { name: kernel.event_subscriber } ]
+    autoconfigure: true
+    arguments:
+        $router: '@router'
+        $elasticApmTracer: '@apm.tracer'
+```
 
 ## Development
 
@@ -22,13 +49,13 @@ make build
 make composer-install
 ```
 
-Or you can access directly to bash
+Or you can access directly to bash ...
 
 ```shell script
 make start
 ```
 
-And test the library
+... and test the library
 
 ```shell script
 /var/app/vendor/bin/phpunit  --configuration /var/app/phpunit.xml.dist 
