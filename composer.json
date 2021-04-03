@@ -1,6 +1,7 @@
 {
     "name": "jamarcer/symfony-httpkernel-apm",
     "description": "Elastic APM Subscriber for Symfony",
+    "version": "2.0.2",
     "license": "MIT",
     "type": "library",
     "authors": [
