@@ -26,7 +26,7 @@ apm.tracer:
 
 ```shell script
 Jamarcer\APM\Symfony\Component\HttpKernel\EventSubscriber:
-    class: Jamarcer\APM\Symfony\Component\HttpKernel\EventSubscriber
+    class: Jamarcer\APM\Symfony\Component\HttpKernel\ElasticAPMSubscriber
     tags: [ { name: kernel.event_subscriber } ]
     autoconfigure: true
     arguments:
