@@ -28,8 +28,8 @@ apm.tracer:
 ### Service Container
 
 ```shell script
-Undanet\APM\Symfony\Component\HttpKernel\EventSubscriber:
-    class: Undanet\APM\Symfony\Component\HttpKernel\EventSubscriber
+Jamarcer\APM\Symfony\Component\HttpKernel\EventSubscriber:
+    class: Jamarcer\APM\Symfony\Component\HttpKernel\EventSubscriber
     tags: [ { name: kernel.event_subscriber } ]
     autoconfigure: true
     arguments:
