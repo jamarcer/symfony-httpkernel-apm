@@ -46,7 +46,6 @@ class ElasticAPMSubscriberTest extends TestCase
         $dispatcher->dispatch($event, KernelEvents::REQUEST);
 
         self::assertEquals(1, $subscriber->countTransactions());
-        self::assertEquals(0, $subscriber->countSpans());
     }
 
     /** @test */
@@ -66,40 +65,34 @@ class ElasticAPMSubscriberTest extends TestCase
         $dispatcher->addSubscriber($subscriber);
         $dispatcher->dispatch($event, KernelEvents::CONTROLLER);
 
-        self::assertEquals(0, $subscriber->countTransactions());
         self::assertEquals(1, $subscriber->countSpans());
     }
 
-    /** @no_test */
-    public function when_response_event_is_received_apm_not_registered_transaction(): void
+    /** @test */
+    public function when_emulatded_request_process_apm_registered_actions(): void
     {
         $subscriber = $this->getSubscriber();
-
         $kernel = $this->getMockBuilder(KernelInterface::class)->getMock();
-        $event = new ResponseEvent($kernel, new Request([], [], ['_route' => 'RouteTest']), 1, new Response());
-
         $dispatcher = new EventDispatcherMock();
         $dispatcher->addSubscriber($subscriber);
-        $dispatcher->dispatch($event, KernelEvents::RESPONSE);
 
-        self::assertEquals(0, $subscriber->countTransactions());
-        self::assertEquals(0, $subscriber->countSpans());
-    }
+        $aRequest = new Request([], [], ['_route' => 'RouteTest']);
+        $aResponse = new Response();
 
-    /** @no_test */
-    public function when_terminate_event_is_received_apm_not_registered_transaction(): void
-    {
-        $subscriber = $this->getSubscriber();
+        $requestEvent = new RequestEvent($kernel, $aRequest, 1);
+        $dispatcher->dispatch($requestEvent, KernelEvents::REQUEST);
 
-        $kernel = $this->getMockBuilder(KernelInterface::class)->getMock();
-        $event = new TerminateEvent($kernel, new Request([], [], ['_route' => 'RouteTest']), new Response());
+        $controlEvent = new ControllerEvent($kernel, new ControllerMock(), $aRequest, 1 );
+        $dispatcher->dispatch($controlEvent, KernelEvents::CONTROLLER);
 
-        $dispatcher = new EventDispatcherMock();
-        $dispatcher->addSubscriber($subscriber);
-        $dispatcher->dispatch($event, KernelEvents::TERMINATE);
+        $responseEvent = new ResponseEvent($kernel, $aRequest, 1, $aResponse);
+        $dispatcher->dispatch($responseEvent, KernelEvents::RESPONSE);
 
-        self::assertEquals(0, $subscriber->countTransactions());
-        self::assertEquals(0, $subscriber->countSpans());
+        $terminateEvent = new TerminateEvent($kernel, $aRequest, $aResponse);
+        $dispatcher->dispatch($terminateEvent, KernelEvents::TERMINATE);
+
+        self::assertEquals(1, $subscriber->countTransactions());
+        self::assertEquals(1, $subscriber->countSpans());
     }
 
     protected function getSubscriber(bool $startTransaction = false): ElasticAPMSubscriber

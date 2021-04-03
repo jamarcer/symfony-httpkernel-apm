@@ -3,9 +3,6 @@
 This library supports Span traces of Symfony HttpKernel requests.
 This library is based on [Elastic APM for Symfony HttpKernel](https://github.com/PcComponentes/apm-symfony-http-kernel).
 
-PHP: 8.0
-Symfony: 5.2
-
 ## Installation
 
 Install via [composer](https://getcomposer.org/)
